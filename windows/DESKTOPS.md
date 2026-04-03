@@ -68,10 +68,53 @@ MoveWindow(num) {
 #9::GoToDesktop(8)
 ```
 
-### 2. Auto-start on Boot
+### 2. Auto-start on Boot (with Admin Privileges)
 
-1. Press `Win + R`, type `shell:startup`, hit Enter.
-2. Place a **shortcut** to `virtual-desktops.ahk` in that folder.
+Using Task Scheduler ensures the script runs elevated on login, which is
+needed for hotkeys to work across all windows (including those running
+as admin).
+
+#### Option A: GUI
+
+1. Press `Win + R`, type `taskschd.msc`, hit Enter.
+2. Click **Create Task** (not "Create Basic Task").
+3. **General** tab:
+   - Name: `Virtual Desktop Hotkeys`
+   - Check **Run only when user is logged on**
+   - Check **Run with highest privileges**
+4. **Triggers** tab → **New…**:
+   - Begin the task: **At log on**
+   - Specific user: your account
+5. **Actions** tab → **New…**:
+   - Action: **Start a program**
+   - Program/script: `C:\Path\To\AutoHotkey.exe`
+   - Add arguments: `"C:\Path\To\virtual-desktops.ahk"`
+6. **Conditions** tab:
+   - Uncheck **Start the task only if the computer is on AC power**
+7. **Settings** tab:
+   - Uncheck **Stop the task if it runs longer than…**
+   - Set **If the task is already running**: **Do not start a new instance**
+8. Click **OK**.
+
+#### Option B: One-liner (PowerShell as Admin)
+
+```powershell
+$ahk = "C:\Path\To\AutoHotkey.exe"
+$script = "C:\Path\To\virtual-desktops.ahk"
+
+$action = New-ScheduledTaskAction -Execute $ahk -Argument "`"$script`""
+$trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+$principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest -LogonType Interactive
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit 0
+
+Register-ScheduledTask -TaskName "Virtual Desktop Hotkeys" `
+    -Action $action `
+    -Trigger $trigger `
+    -Principal $principal `
+    -Settings $settings
+```
+
+> **Update the paths** to match where you placed AutoHotkey and the script.
 
 ### 3. Fix Taskbar Animation Delay
 
