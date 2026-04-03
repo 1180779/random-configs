@@ -19,8 +19,15 @@ Save as `virtual-desktops.ahk`:
 
 ```ahk
 #Requires AutoHotkey v2.0
+#SingleInstance Force
 
-; Load the VirtualDesktopAccessor DLL
+; Re-launch as admin if not already elevated
+if !A_IsAdmin {
+    Run '*RunAs "' A_ScriptFullPath '"'
+    ExitApp
+}
+
+; Load the DLL (put VirtualDesktopAccessor.dll next to this script)
 hVDA := DllCall("LoadLibrary",
     "Str", A_ScriptDir "\VirtualDesktopAccessor.dll", "Ptr")
 
@@ -28,6 +35,23 @@ GoToDesktop(num) {
     DllCall(A_ScriptDir "\VirtualDesktopAccessor.dll\GoToDesktopNumber",
         "Int", num)
 }
+
+MoveWindow(num) {
+    hwnd := WinGetID("A")
+    DllCall(A_ScriptDir "\VirtualDesktopAccessor.dll\MoveWindowToDesktopNumber",
+        "Ptr", hwnd, "Int", num)
+}
+
+; Win + Shift + 1..9 → move active window to desktop N
+#+1::MoveWindow(0)
+#+2::MoveWindow(1)
+#+3::MoveWindow(2)
+#+4::MoveWindow(3)
+#+5::MoveWindow(4)
+#+6::MoveWindow(5)
+#+7::MoveWindow(6)
+#+8::MoveWindow(7)
+#+9::MoveWindow(8)
 
 ; Win + Shift + Q → close active window
 #+q::WinClose("A")
