@@ -39,9 +39,38 @@ map <leader>g <Action>(GotoDeclaration)
 "" Map <leader>t to the reformat code action
 map <leader>f <Action>(ReformatCode)
 
+"" Map <leader>n to the debugger resume action
+map <leader>n <Action>(ConfigurationXDebuggerResumeAction)
+
 "" Map <leader>d to start debug
 map <leader>d <Action>(Debug)
 map <leader>s <Action>(Stop)
 
 "" Map <leader>b to toggle the breakpoint on the current line
 map <leader>b <Action>(ToggleLineBreakpoint)
+
+"" Map buffer actions
+map <leader>v :vsp<CR>
+map <leader>h :sp<CR>
+map <leader>x <Action>(Unsplit)
+map <leader>X <Action>(UnsplitAll)
+
+
+
+"" --- Rendered Comments / Documentation ---
+
+"" Map <leader>c to toggle rendered comments (reader mode) at the cursor
+map <leader>c <Action>(ToggleRenderedDocPresentation)
+
+"" Map <leader>C to toggle rendered comments globally for ALL files/comments
+map <leader>C <Action>(ToggleRenderedDocPresentationForAll)
+
+
+
+"" --- Comment Folding (File Scope) ---
+
+"" Map <leader>zc to collapse all documentation comments in the current file
+map <leader>zc <Action>(CollapseDocComments)
+
+"" Map <leader>zo to expand all documentation comments in the current file
+map <leader>zo <Action>(ExpandDocComments)
