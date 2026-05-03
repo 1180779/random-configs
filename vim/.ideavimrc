@@ -2,75 +2,132 @@
 "   the same commands as the original .vimrc configuration.
 " You can find a list of commands here: https://jb.gg/h38q75
 " Find more examples here: https://jb.gg/share-ideavimrc
+" --- Enable IdeaVim plugins https://jb.gg/ideavim-plugins
+"" -- Map IDE actions to IdeaVim -- https://jb.gg/abva4t
+
+set ideavimsupport=dialog,singleline
 
 nnoremap <SPACE> <Nop>
 let mapleader=" "
 
-"" -- Suggested options --
-" Show a few lines of context around the cursor. Note that this makes the
-" text scroll if you mouse-click near the start or end of the window.
 set scrolloff=5
-
-" Do incremental searching.
 set incsearch
-
-" Don't use Ex mode, use Q for formatting.
-map Q gq
-
-" --- Enable IdeaVim plugins https://jb.gg/ideavim-plugins
-
-" Highlight copied text
-" Commentary plugin
-" Plug 'tpope/vim-commentary'
 set relativenumber
 
-"" -- Map IDE actions to IdeaVim -- https://jb.gg/abva4t
-"" Map <leader>r to the Reformat Code action
-map <leader>r <Action>(RenameElement)
+" -- Use system clipboard
+set clipboard+=unnamed
+set clipboard+=ideaput
 
-"" Map <leader>t to the quick list of refactor actions
-map <leader>t <Action>(Refactorings.QuickListPopupAction)
-
+"" Map random actions
+noremap <leader>r <Action>(RenameElement)
+noremap <leader>t <Action>(Refactorings.QuickListPopupAction)
 nnoremap <leader>q :action CloseContent<CR>
+noremap <leader>g <Action>(GotoDeclaration)
+noremap <leader>f <Action>(ReformatCode)
 
-"" Map <leader>g to the quick list of refactor actions
-map <leader>g <Action>(GotoDeclaration)
-
-"" Map <leader>t to the reformat code action
-map <leader>f <Action>(ReformatCode)
-
-"" Map <leader>n to the debugger resume action
-map <leader>n <Action>(ConfigurationXDebuggerResumeAction)
-
-"" Map <leader>d to start debug
-map <leader>d <Action>(Debug)
-map <leader>s <Action>(Stop)
-
-"" Map <leader>b to toggle the breakpoint on the current line
-map <leader>b <Action>(ToggleLineBreakpoint)
+"" Map debugger actions
+noremap <leader>n <Action>(ConfigurationXDebuggerResumeAction)
+noremap <leader>d <Action>(Debug)
+noremap <leader>s <Action>(Stop)
+noremap <leader>b <Action>(ToggleLineBreakpoint)
 
 "" Map buffer actions
-map <leader>v :vsp<CR>
-map <leader>h :sp<CR>
-map <leader>x <Action>(Unsplit)
-map <leader>X <Action>(UnsplitAll)
+noremap <leader>v :vsp<CR>
+noremap <leader>h :sp<CR>
+noremap <leader>x <Action>(Unsplit)
+noremap <leader>X <Action>(UnsplitAll)
 
-
-
+""
 "" --- Rendered Comments / Documentation ---
+""
 
 "" Map <leader>c to toggle rendered comments (reader mode) at the cursor
-map <leader>c <Action>(ToggleRenderedDocPresentation)
+noremap <leader>c <Action>(ToggleRenderedDocPresentation)
 
 "" Map <leader>C to toggle rendered comments globally for ALL files/comments
-map <leader>C <Action>(ToggleRenderedDocPresentationForAll)
+noremap <leader>C <Action>(ToggleRenderedDocPresentationForAll)
 
-
-
+""
 "" --- Comment Folding (File Scope) ---
+""
 
 "" Map <leader>zc to collapse all documentation comments in the current file
-map <leader>zc <Action>(CollapseDocComments)
+noremap <leader>zc <Action>(CollapseDocComments)
 
 "" Map <leader>zo to expand all documentation comments in the current file
-map <leader>zo <Action>(ExpandDocComments)
+noremap <leader>zo <Action>(ExpandDocComments)
+
+""
+"" --- VCS ---
+""
+noremap <Leader>vr <Action>(Vcs.RollbackChangedLines)
+noremap <Leader>vb <Action>(Annotate)
+
+""
+"" --- PRs ---
+""
+
+noremap <leader>pc <Action>(Code.Review.Editor.New.Comment)
+
+"" PR suggestion workflow
+
+let g:last_sel = {}
+
+function! SaveLastSelection()
+  let g:last_sel = {'start': line("'<"), 'stop': line("'>"), 'total': line('$')}
+endfunction
+
+function! ReselectSurviving()
+  if !exists('g:last_sel') || empty(g:last_sel)
+    echo "No saved selection" | return
+  endif
+
+  let first = g:last_sel.start
+  let gtotal = g:last_sel.total
+  let total = line('$')
+  let gstop = g:last_sel.stop + (line('$') - gtotal)
+  let stop = gstop + (total - total)
+
+  if first > total || stop < first
+    echo "Nothing left of the selection" | return
+  endif
+  if stop > total | let stop = total | endif
+
+  execute "normal! " . first . "GV" . stop . "G"
+endfunction
+
+function! ReselectSurvivingForComment()
+  if !exists('g:last_sel') || empty(g:last_sel)
+    echo "No saved selection" | return
+  endif
+  
+  let first = g:last_sel.start
+  let gtotal = g:last_sel.total
+  let total = line('$')
+  let gstop = g:last_sel.stop + (line('$') - gtotal)
+  let stop = gstop + (total - total)
+
+  let first = g:last_sel.start
+  if first > total || stop < first
+    echo "Nothing left of the selection" | return
+  endif
+  if stop > total | let stop = total | endif
+
+  if stop > first
+    let stop = stop - 1
+  endif
+
+  execute "normal! " . first . "GV" . stop . "G"
+endfunction
+
+function! WrapAsSuggestion()
+  let text = @+
+  if text[-1:] == "\n"
+    let text = text[:-2]
+  endif
+  let @+ = "```suggestion\n" . text . "\n```"
+endfunction
+
+xnoremap <silent> <leader>ms :<C-u>call SaveLastSelection()<CR>
+nnoremap <silent> <leader>mr :<C-u>call ReselectSurviving()<CR>
+xnoremap <silent> <leader>ps "+y:<C-u>call WrapAsSuggestion()<CR>:call SaveLastSelection()<CR>:call ReselectSurviving()<CR>:action Vcs.RollbackChangedLines<CR>:call ReselectSurvivingForComment()<CR>:action Code.Review.Editor.New.Comment<CR>
