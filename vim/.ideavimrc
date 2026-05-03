@@ -19,55 +19,76 @@ set clipboard+=unnamed
 set clipboard+=ideaput
 
 "" Map random actions
-noremap <leader>r <Action>(RenameElement)
-noremap <leader>t <Action>(Refactorings.QuickListPopupAction)
+nnoremap <Leader>r :action RenameElement<CR>
+nnoremap <leader>t :action Refactorings.QuickListPopupAction<CR>
 nnoremap <leader>q :action CloseContent<CR>
-noremap <leader>g <Action>(GotoDeclaration)
-noremap <leader>f <Action>(ReformatCode)
+nnoremap <leader>g :action GotoDeclaration<CR>
+nnoremap <leader>f :action ReformatCode<CR>
 
 "" Map debugger actions
-noremap <leader>n <Action>(ConfigurationXDebuggerResumeAction)
-noremap <leader>d <Action>(Debug)
-noremap <leader>s <Action>(Stop)
-noremap <leader>b <Action>(ToggleLineBreakpoint)
+nnoremap <leader>n :action ConfigurationXDebuggerResumeAction<CR>
+nnoremap <leader>d :action Debug<CR>
+nnoremap <leader>s :action Stop<CR>
+nnoremap <leader>b :action ToggleLineBreakpoint<CR>
 
 "" Map buffer actions
-noremap <leader>v :vsp<CR>
-noremap <leader>h :sp<CR>
-noremap <leader>x <Action>(Unsplit)
-noremap <leader>X <Action>(UnsplitAll)
+nnoremap <leader>v :vsp<CR>
+nnoremap <leader>h :sp<CR>
+nnoremap <leader>x :action Unsplit<CR>
+nnoremap <leader>X :action UnsplitAll<CR>
+
+""
+"" -- Toggable paste mode
+"" 
+let g:paste_no_overwrite = 1
+
+function! TogglePasteMode()
+  if g:paste_no_overwrite
+    let g:paste_no_overwrite = 0
+    vnoremap p p
+    echo "Paste mode: DEFAULT (overwrites register)"
+  else
+    let g:paste_no_overwrite = 1
+    vnoremap p "_c<C-r>0<Esc>
+    echo "Paste mode: SAFE (preserves register)"
+  endif
+endfunction
+
+" Default to safe paste
+vnoremap p "_c<C-r>0<Esc>
+nnoremap <leader>pp :<C-u>call TogglePasteMode()<CR>
 
 ""
 "" --- Rendered Comments / Documentation ---
 ""
 
 "" Map <leader>c to toggle rendered comments (reader mode) at the cursor
-noremap <leader>c <Action>(ToggleRenderedDocPresentation)
+nnoremap <leader>c :action ToggleRenderedDocPresentation<CR>
 
 "" Map <leader>C to toggle rendered comments globally for ALL files/comments
-noremap <leader>C <Action>(ToggleRenderedDocPresentationForAll)
+nnoremap <leader>C :action ToggleRenderedDocPresentationForAll<CR>
 
 ""
 "" --- Comment Folding (File Scope) ---
 ""
 
 "" Map <leader>zc to collapse all documentation comments in the current file
-noremap <leader>zc <Action>(CollapseDocComments)
+nnoremap <leader>zc :action CollapseDocComments<CR>
 
 "" Map <leader>zo to expand all documentation comments in the current file
-noremap <leader>zo <Action>(ExpandDocComments)
+nnoremap <leader>zo :action ExpandDocComments<CR>
 
 ""
 "" --- VCS ---
 ""
-noremap <Leader>vr <Action>(Vcs.RollbackChangedLines)
-noremap <Leader>vb <Action>(Annotate)
+nnoremap <Leader>vr :action Vcs.RollbackChangedLines<CR>
+nnoremap <Leader>vb :action Annotate)
 
 ""
 "" --- PRs ---
 ""
 
-noremap <leader>pc <Action>(Code.Review.Editor.New.Comment)
+nnoremap <leader>pc :action Code.Review.Editor.New.Comment<CR>
 
 "" PR suggestion workflow
 
