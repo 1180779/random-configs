@@ -13,6 +13,8 @@ let mapleader=" "
 set scrolloff=5
 set incsearch
 set relativenumber
+set ignorecase
+set smartcase
 
 " -- Use system clipboard
 set clipboard+=unnamed
@@ -34,11 +36,12 @@ noremap <leader>b :action ToggleLineBreakpoint<CR>
 "" Map buffer actions
 noremap <leader>v :vsp<CR>
 noremap <leader>h :sp<CR>
-noremap <leader>x :action Unsplit<CR>
+noremap <leader>x :action CloseEditor<CR>
+noremap <leader>x <C-w>c
 noremap <leader>X :action UnsplitAll<CR>
 
 ""
-"" -- Toggable paste mode
+"" -- Togglable paste mode
 "" 
 let g:paste_no_overwrite = 1
 
