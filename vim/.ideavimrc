@@ -40,7 +40,7 @@ noremap <leader>x <C-W>c
 noremap <leader>X :action UnsplitAll<CR>
 
 ""
-"" -- Toggable paste mode
+"" -- Togglable paste mode
 "" 
 let g:paste_no_overwrite = 1
 
@@ -96,6 +96,12 @@ noremap <leader>zc :action CollapseDocComments<CR>
 "" Map <leader>zo to expand all documentation comments in the current file
 noremap <leader>zo :action ExpandDocComments<CR>
 
+""
+"" --- view quick actions ---
+""
+noremap <Leader>qd :action QuickJavaDoc<CR>
+noremap <Leader>qp :action ParameterInfo<CR>
+noremap <Leader>qe :action ShowErrorDescription<CR>
 ""
 "" --- VCS ---
 ""
