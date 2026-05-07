@@ -36,12 +36,11 @@ noremap <leader>b :action ToggleLineBreakpoint<CR>
 "" Map buffer actions
 noremap <leader>v :vsp<CR>
 noremap <leader>h :sp<CR>
-noremap <leader>x :action CloseEditor<CR>
-noremap <leader>x <C-w>c
+noremap <leader>x <C-W>c
 noremap <leader>X :action UnsplitAll<CR>
 
 ""
-"" -- Togglable paste mode
+"" -- Toggable paste mode
 "" 
 let g:paste_no_overwrite = 1
 
@@ -72,6 +71,22 @@ noremap <leader>c :action ToggleRenderedDocPresentation<CR>
 noremap <leader>C :action ToggleRenderedDocPresentationForAll<CR>
 
 ""
+"" --- Layout shenanigance (IDE context) --- 
+""
+
+" Save current split/file layout
+noremap <leader>ls :action context.save<CR>
+
+" Load a previously saved layout
+noremap <leader>ll :action context.load<CR>
+
+" Clear the current layout (closes all tabs)
+noremap <leader>lc :action context.clear<CR>
+
+" Open the Tasks & Contexts management window
+noremap <leader>lm :action tasks.and.contexts<CR>
+
+""
 "" --- Comment Folding (File Scope) ---
 ""
 
@@ -80,13 +95,6 @@ noremap <leader>zc :action CollapseDocComments<CR>
 
 "" Map <leader>zo to expand all documentation comments in the current file
 noremap <leader>zo :action ExpandDocComments<CR>
-
-""
-"" --- view quick actions ---
-""
-noremap <Leader>qd :action QuickJavaDoc<CR>
-noremap <Leader>qp :action ParameterInfo<CR>
-noremap <Leader>qe :action ShowErrorDescription<CR>
 
 ""
 "" --- VCS ---
@@ -160,5 +168,5 @@ function! WrapAsSuggestion()
 endfunction
 
 xnoremap <silent> <leader>ms :<C-u>call SaveLastSelection()<CR>
-nnoremap <silent> <leader>mr :<C-u>call ReselectSurviving()<CR>
+xnoremap <silent> <leader>mr :<C-u>call ReselectSurviving()<CR>
 xnoremap <silent> <leader>ps "+y:<C-u>call WrapAsSuggestion()<CR>:call SaveLastSelection()<CR>:call ReselectSurviving()<CR>:action Vcs.RollbackChangedLines<CR>:call ReselectSurvivingForComment()<CR>:action Code.Review.Editor.New.Comment<CR>
